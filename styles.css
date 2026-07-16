@@ -1,10 +1,10 @@
 /* ============ THEME VARIABLES ============ */
 :root {
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-soft: rgba(99,102,241,0.12);
+  --accent: #4f8cff;
+  --accent-hover: #3b78ea;
+  --accent-soft: rgba(79, 140, 255, 0.12);
   --danger: #ef4444;
-  --radius: 12px;
+  --radius: 14px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -16,7 +16,7 @@ body.theme-dark {
   --border: #262a37;
   --text: #e8e9ee;
   --text-muted: #9096a8;
-  --bubble-user: #6366f1;
+  --bubble-user: #4f8cff;
   --bubble-user-text: #ffffff;
   --bubble-assistant: #1d212c;
   --bubble-assistant-text: #e8e9ee;
@@ -24,18 +24,18 @@ body.theme-dark {
 }
 
 body.theme-light {
-  --bg: #f7f7f9;
+  --bg: #f5f8ff;
   --bg-elevated: #ffffff;
-  --bg-sidebar: #f0f1f5;
+  --bg-sidebar: #eef4ff;
   --bg-input: #ffffff;
-  --border: #e2e4ea;
-  --text: #1a1b25;
-  --text-muted: #666c80;
-  --bubble-user: #6366f1;
+  --border: #dbe4ff;
+  --text: #1f2a44;
+  --text-muted: #64708b;
+  --bubble-user: #4f8cff;
   --bubble-user-text: #ffffff;
   --bubble-assistant: #ffffff;
-  --bubble-assistant-text: #1a1b25;
-  --scrollbar: #d5d7e0;
+  --bubble-assistant-text: #1f2a44;
+  --scrollbar: #c7d3eb;
 }
 
 * { box-sizing: border-box; }
@@ -46,6 +46,7 @@ html, body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button, input, textarea, select {

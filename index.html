@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocBot — AI Documentation Assistant</title>
+<title>Ansuha's Personal AI</title>
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -17,7 +17,7 @@
 
 <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-dark">
+<body class="theme-light">
 
 <div class="app">
 
@@ -26,7 +26,7 @@
     <div class="sidebar-header">
       <div class="brand">
         <span class="brand-dot"></span>
-        <span class="brand-name">DocBot</span>
+        <span class="brand-name">Ansuha's Personal AI</span>
       </div>
       <button class="icon-btn" id="closeSidebarBtn" title="Close sidebar">✕</button>
     </div>
@@ -76,9 +76,9 @@
 
     <div class="chat-window" id="chatWindow">
       <div class="empty-state" id="emptyState">
-        <div class="empty-icon">📄🤖</div>
-        <h2>Your personal interview-prep assistant</h2>
-        <p>Upload your SAP Security / GRC PDFs, notes, and SOPs, then ask direct, conceptual, or scenario-based questions. Answers are grounded strictly in your documents, with sources and page numbers.</p>
+        <div class="empty-icon">✨🤖</div>
+        <h2>Your personal AI companion</h2>
+        <p>Upload your documents, notes, and PDFs, then ask direct questions. Answers stay grounded in your files with sources and page references.</p>
         <div class="example-chips">
           <button class="chip">What is a Composite Role?</button>
           <button class="chip">Explain Derived Roles with an example.</button>
@@ -126,7 +126,7 @@
       </select>
       <p class="field-hint">
         Google regularly retires older free-tier models (a 404 saying "no longer available to new users" means
-        the selected model was retired). If that happens, DocBot automatically retries with a current model —
+        the selected model was retired). If that happens, Ansuha's Personal AI automatically retries with a current model —
         check here afterwards to see which one it settled on. You can always confirm the live list at
         <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/models</a>.
       </p>
@@ -137,9 +137,8 @@
         <option value="strict">Strict — documents only, refuses if not explicitly covered</option>
       </select>
       <p class="field-hint">
-        In Balanced mode, DocBot still answers primarily from your uploaded documents and always cites them, but
-        for scenario/troubleshooting questions it's also allowed to apply standard, well-established SAP
-        Security/GRC professional reasoning to connect the dots — clearly labeling any part that goes beyond
+        In Balanced mode, Ansuha's Personal AI still answers primarily from your uploaded documents and always cites them, but
+        for scenario/troubleshooting questions it's also allowed to apply standard expert reasoning to connect the dots — clearly labeling any part that goes beyond
         what your documents say. Switch to Strict if you only ever want document-verbatim answers.
       </p>
 

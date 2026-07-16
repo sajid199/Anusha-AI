@@ -874,10 +874,10 @@ $("wipeDataBtn").addEventListener("click", async () => {
 $("downloadTxtBtn").addEventListener("click", () => {
   const chat = getCurrentChat();
   if (!chat || !chat.messages.length) return alert("No messages to export yet.");
-  let out = `DocBot Chat Export — ${chat.title}\n${new Date().toLocaleString()}\n\n`;
+  let out = `Ansuha's Personal AI Chat Export — ${chat.title}\n${new Date().toLocaleString()}\n\n`;
   chat.messages.forEach((m) => {
     if (m.thinking) return;
-    out += `[${formatTime(m.timestamp)}] ${m.role === "user" ? "You" : "DocBot"}:\n${m.content}\n`;
+    out += `[${formatTime(m.timestamp)}] ${m.role === "user" ? "You" : "Ansuha's Personal AI"}:\n${m.content}\n`;
     if (m.sources && m.sources.length) {
       out += "Sources:\n" + m.sources.map((s) => ` - ${s.docName} (Page ${s.page})`).join("\n") + "\n";
     }
@@ -898,7 +898,7 @@ $("downloadPdfBtn").addEventListener("click", () => {
   chat.messages.forEach((m) => {
     if (m.thinking) return;
     html += `<div style="margin-bottom:16px;">
-      <div style="font-weight:700;font-size:12px;color:#444;">${m.role === "user" ? "You" : "DocBot"} — ${formatTime(m.timestamp)}</div>
+      <div style="font-weight:700;font-size:12px;color:#444;">${m.role === "user" ? "You" : "Ansuha's Personal AI"} — ${formatTime(m.timestamp)}</div>
       <div style="font-size:13px;line-height:1.5;">${renderMarkdown(m.content)}</div>`;
     if (m.sources && m.sources.length) {
       html += `<div style="font-size:11px;color:#666;margin-top:4px;">Sources: ${m.sources
@@ -915,7 +915,7 @@ $("downloadPdfBtn").addEventListener("click", () => {
    14. BOOT
 ------------------------------------------------------------------------- */
 async function boot() {
-  state.theme = localStorage.getItem("docbot_theme") || "dark";
+  state.theme = localStorage.getItem("docbot_theme") || "light";
   applyTheme();
   loadSettings();
   loadChats();
