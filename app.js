@@ -1002,7 +1002,7 @@ $("downloadPdfBtn").addEventListener("click", () => {
    14. BOOT
 ------------------------------------------------------------------------- */
 async function boot() {
-  state.theme = localStorage.getItem("docbot_theme") || "dark";
+  state.theme = localStorage.getItem("docbot_theme") || "light";
   applyTheme();
   loadSettings();
   loadChats();
