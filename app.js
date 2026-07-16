@@ -79,6 +79,7 @@ const chatWindow = $("chatWindow");
 const emptyState = $("emptyState");
 const messageInput = $("messageInput");
 const sendBtn = $("sendBtn");
+const micBtn = $("micBtn");
 const composerHint = $("composerHint");
 const chatTitle = $("chatTitle");
 const chatHistoryList = $("chatHistoryList");
@@ -88,6 +89,7 @@ const settingsModal = $("settingsModal");
 const apiKeyInput = $("apiKeyInput");
 const modelSelect = $("modelSelect");
 const reasoningModeSelect = $("reasoningModeSelect");
+const voiceLangSelect = $("voiceLangSelect");
 const topKInput = $("topKInput");
 
 /* -------------------------------------------------------------------------
@@ -174,6 +176,7 @@ const state = {
     model: "gemini-3.5-flash",
     topK: 8,
     reasoningMode: "balanced",
+    voiceLang: "en-IN",
   },
   theme: "dark",
 };
@@ -186,6 +189,7 @@ function loadSettings() {
   apiKeyInput.value = state.settings.apiKey || "";
   modelSelect.value = state.settings.model || "gemini-3.5-flash";
   reasoningModeSelect.value = state.settings.reasoningMode || "balanced";
+  voiceLangSelect.value = state.settings.voiceLang || "en-IN";
   topKInput.value = state.settings.topK || 8;
 }
 
@@ -193,6 +197,7 @@ function saveSettings() {
   state.settings.apiKey = apiKeyInput.value.trim();
   state.settings.model = modelSelect.value;
   state.settings.reasoningMode = reasoningModeSelect.value;
+  state.settings.voiceLang = voiceLangSelect.value;
   state.settings.topK = parseInt(topKInput.value, 10) || 8;
   localStorage.setItem("docbot_settings", JSON.stringify(state.settings));
 }
@@ -729,11 +734,93 @@ async function callGemini(historyMessages, userTurnText) {
 }
 
 /* -------------------------------------------------------------------------
-   11. SEND FLOW
+   11b. VOICE INPUT (Web Speech API — free, built into Chrome/Edge/Android)
+------------------------------------------------------------------------- */
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isRecording = false;
+let voiceFinalTranscript = "";
+let voiceBaseText = "";
+const originalComposerHint = composerHint.textContent;
+
+if (!SpeechRecognitionAPI) {
+  micBtn.classList.add("unsupported");
+  micBtn.title = "Voice input isn't supported in this browser — try Chrome, Edge, or Android Chrome";
+} else {
+  micBtn.addEventListener("click", toggleVoiceInput);
+}
+
+function toggleVoiceInput() {
+  if (isRecording) {
+    recognition && recognition.stop();
+    return;
+  }
+  startVoiceInput();
+}
+
+function startVoiceInput() {
+  recognition = new SpeechRecognitionAPI();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = state.settings.voiceLang || "en-IN";
+
+  voiceFinalTranscript = "";
+  voiceBaseText = messageInput.value.trim() ? messageInput.value.trim() + " " : "";
+
+  isRecording = true;
+  micBtn.classList.add("recording");
+  micBtn.textContent = "⏹";
+  composerHint.textContent = "🎙 Listening… speak your question, then pause (or tap the mic to stop)";
+
+  recognition.onresult = (e) => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        voiceFinalTranscript += transcript + " ";
+      } else {
+        interim += transcript;
+      }
+    }
+    messageInput.value = voiceBaseText + voiceFinalTranscript + interim;
+    autoResize();
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      alert("Microphone access was blocked. Please allow microphone permission for this site to use voice input.");
+    } else if (e.error !== "no-speech" && e.error !== "aborted") {
+      console.error("Speech recognition error:", e.error);
+    }
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    micBtn.classList.remove("recording");
+    micBtn.textContent = "🎤";
+    composerHint.textContent = originalComposerHint;
+    updateComposerHint();
+    messageInput.value = messageInput.value.trim();
+    messageInput.focus();
+  };
+
+  try {
+    recognition.start();
+  } catch (err) {
+    isRecording = false;
+    micBtn.classList.remove("recording");
+    micBtn.textContent = "🎤";
+  }
+}
+
+/* -------------------------------------------------------------------------
+   12. SEND FLOW
 ------------------------------------------------------------------------- */
 async function sendMessage(rawText) {
   const text = (rawText !== undefined ? rawText : messageInput.value).trim();
   if (!text) return;
+
+  if (isRecording && recognition) recognition.stop();
 
   if (!state.settings.apiKey) {
     openSettings();
@@ -874,10 +961,10 @@ $("wipeDataBtn").addEventListener("click", async () => {
 $("downloadTxtBtn").addEventListener("click", () => {
   const chat = getCurrentChat();
   if (!chat || !chat.messages.length) return alert("No messages to export yet.");
-  let out = `Ansuha's Personal AI Chat Export — ${chat.title}\n${new Date().toLocaleString()}\n\n`;
+  let out = `DocBot Chat Export — ${chat.title}\n${new Date().toLocaleString()}\n\n`;
   chat.messages.forEach((m) => {
     if (m.thinking) return;
-    out += `[${formatTime(m.timestamp)}] ${m.role === "user" ? "You" : "Ansuha's Personal AI"}:\n${m.content}\n`;
+    out += `[${formatTime(m.timestamp)}] ${m.role === "user" ? "You" : "DocBot"}:\n${m.content}\n`;
     if (m.sources && m.sources.length) {
       out += "Sources:\n" + m.sources.map((s) => ` - ${s.docName} (Page ${s.page})`).join("\n") + "\n";
     }
@@ -898,7 +985,7 @@ $("downloadPdfBtn").addEventListener("click", () => {
   chat.messages.forEach((m) => {
     if (m.thinking) return;
     html += `<div style="margin-bottom:16px;">
-      <div style="font-weight:700;font-size:12px;color:#444;">${m.role === "user" ? "You" : "Ansuha's Personal AI"} — ${formatTime(m.timestamp)}</div>
+      <div style="font-weight:700;font-size:12px;color:#444;">${m.role === "user" ? "You" : "DocBot"} — ${formatTime(m.timestamp)}</div>
       <div style="font-size:13px;line-height:1.5;">${renderMarkdown(m.content)}</div>`;
     if (m.sources && m.sources.length) {
       html += `<div style="font-size:11px;color:#666;margin-top:4px;">Sources: ${m.sources
@@ -915,7 +1002,7 @@ $("downloadPdfBtn").addEventListener("click", () => {
    14. BOOT
 ------------------------------------------------------------------------- */
 async function boot() {
-  state.theme = localStorage.getItem("docbot_theme") || "light";
+  state.theme = localStorage.getItem("docbot_theme") || "dark";
   applyTheme();
   loadSettings();
   loadChats();
